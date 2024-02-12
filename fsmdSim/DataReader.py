@@ -1,7 +1,6 @@
 import sys
 import xmltodict
 
-from fsmdSim.DataReader import DataReader
 from model.Condition import Condition
 from model.ConditionsContainer import ConditionsContainer
 from model.Input import Input
@@ -42,6 +41,7 @@ class DataReader:
 
         print("\n--FSMD description--")
 
+        inputStimuliContainer = []#DataReader().readStimuliData()
         
         states = self.__ReadStates(fsmd_des)
         initialState = self.__ReadInitialState(fsmd_des)
