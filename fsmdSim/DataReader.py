@@ -1,6 +1,7 @@
 import sys
 import xmltodict
 
+from fsmdSim.ProgramState import ProgramState
 from model.Condition import Condition
 from model.ConditionsContainer import ConditionsContainer
 from model.Input import Input
@@ -41,7 +42,7 @@ class DataReader:
 
         print("\n--FSMD description--")
 
-        inputStimuliContainer = []#DataReader().readStimuliData()
+        inputStimuliContainer, endStateName = DataReader().readStimuliData()
         
         states = self.__ReadStates(fsmd_des)
         initialState = self.__ReadInitialState(fsmd_des)
@@ -55,7 +56,7 @@ class DataReader:
         stateObjects = {}
         for state in states:
             stateObjects[state] = State(state)
-        statesContainer = StatesContainer(stateObjects[initialState])
+        statesContainer = StatesContainer()
         statesContainer.states = stateObjects
 
         variablesContainer = VariablesContainer()
@@ -64,7 +65,7 @@ class DataReader:
 
         inputsContainer = InputsContainer()
         for (name, value) in inputs.items():
-            inputsContainer.Inputs[name] = Input(name, value)
+            inputsContainer.objects[name] = Input(name, value)
 
         instructionsContainer = InstructionsContainer()
         for (name, value) in operations.items():
@@ -91,11 +92,12 @@ class DataReader:
                         [instructionsContainer.Instructions[instructionName] for instructionName in instructionsNames]))
             transitionsContainer.Transitions[state] = transitions
 
+        programState = ProgramState(statesContainer.states[initialState], iterations, statesContainer.states[endStateName])
     
-        return iterations, statesContainer, variablesContainer, inputsContainer, instructionsContainer, conditionsContainer, transitionsContainer, inputStimuliContainer
+        return statesContainer, variablesContainer, inputsContainer, instructionsContainer, conditionsContainer, transitionsContainer, inputStimuliContainer, programState
 
 
-    def readStimuliData(self) -> InputStimuliContainer:
+    def readStimuliData(self) -> tuple[InputStimuliContainer, str]:
         if len(sys.argv) < 3:
             print('Too few arguments.')
             sys.exit(-1)
@@ -123,7 +125,7 @@ class DataReader:
         for (cycle, expressions) in dynamicExpressionByCycle.items():
             inputStimuliContainer.objects[cycle] = InputStimulus(cycle, '\n'.join(expressions))
 
-        return inputStimuliContainer
+        return inputStimuliContainer, fsmd_stim['fsmdstimulus']['endstate']
 
     def __ReadStates(self, fsmd_des):
         #
