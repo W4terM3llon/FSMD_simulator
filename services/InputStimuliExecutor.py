@@ -8,7 +8,8 @@ class InputStimuliExecutor:
         self.inputStimuliExpressionExecutor: DynamicExpressionExecutor = variableExpressionExecutor
 
     def executeInputStimuli(self, cycle):
+        if cycle not in self.inputStimuliContainer.objects:
+            return
+
         inputStimuli = self.inputStimuliContainer.objects[cycle]
-        if inputStimuli is not None:
-            for expression in inputStimuli.dynamicExpression:
-                self.inputStimuliExpressionExecutor.executeDynamicExpression(expression, False)
+        self.inputStimuliExpressionExecutor.executeDynamicExpression(inputStimuli.dynamicExpression, False)

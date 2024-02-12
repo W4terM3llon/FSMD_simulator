@@ -1,13 +1,15 @@
+from fsmdSim.ProgramState import ProgramState
 from model.StatesContainer import StatesContainer
 from model.Transition import Transition
 from model.VariablesContainer import VariablesContainer
 
 
 class Logger():
-    def __init__(self, statesContainer, variablesContainer, inputsContainer):
+    def __init__(self, statesContainer, variablesContainer, inputsContainer, programState):
         self.inputsContainer = inputsContainer
         self.statesContainer: StatesContainer = statesContainer
         self.variablesContainer: VariablesContainer = variablesContainer
+        self.programState: ProgramState = programState
 
     def logMessage(self, message):
         print(message)
@@ -18,7 +20,7 @@ class Logger():
 At the beginning of the simulation the status is:
 Variables:
 {self.variablesContainer}
-Initial state: {self.statesContainer.currentState.name}""")
+Initial state: {self.programState.currentState.name}""")
 
     def logCycle(self, cycle: int, transition: Transition):
         self.logMessage(f"""

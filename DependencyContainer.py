@@ -1,4 +1,5 @@
 from fsmdSim.DataReader import DataReader
+from fsmdSim.ProgramState import ProgramState
 from model.Condition import Condition
 from model.ConditionsContainer import ConditionsContainer
 from model.Input import Input
@@ -21,12 +22,12 @@ Converts raw data read by DataReader to instances of classes defined in Model pa
 '''
 def CreateDTOObjects():
     maxCycleCount, initialState, states, inputs, variables, operations, conditions, fsmdTransitions = DataReader().readDescriptionData()
-    inputStimuliContainer = []#DataReader().readStimuliData()
+    inputStimuliContainer, endStateName = DataReader().readStimuliData()
 
     stateObjects = {}
     for state in states:
         stateObjects[state] = State(state)
-    statesContainer = StatesContainer(stateObjects[initialState])
+    statesContainer = StatesContainer()
     statesContainer.states = stateObjects
 
     variablesContainer = VariablesContainer()
@@ -62,15 +63,16 @@ def CreateDTOObjects():
                     [instructionsContainer.Instructions[instructionName] for instructionName in instructionsNames]))
         transitionsContainer.Transitions[state] = transitions
 
-    return maxCycleCount, statesContainer, variablesContainer, inputsContainer, instructionsContainer, conditionsContainer, transitionsContainer, inputStimuliContainer
+    programState = ProgramState(statesContainer.states[initialState], maxCycleCount, statesContainer.states[endStateName])
+
+    return maxCycleCount, statesContainer, variablesContainer, inputsContainer, instructionsContainer, conditionsContainer, transitionsContainer, inputStimuliContainer, programState
 
 
 '''
 Instances which are injected into constructors - dependency inversion by injection 
 '''
-maxCycleCount, statesContainer, variablesContainer, inputsContainer, instructionsContainer, conditionsContainer, transitionsContainer, inputStimuliContainer = CreateDTOObjects()
+maxCycleCount, statesContainer, variablesContainer, inputsContainer, instructionsContainer, conditionsContainer, transitionsContainer, inputStimuliContainer, programState = CreateDTOObjects()
 variableExpressionExecutor = DynamicExpressionExecutor(variablesContainer, inputsContainer)
-#inputStimuliExpressionExecutor = DynamicExpressionExecutorABC(inputStimuliContainer)
-transitionsExecutor = TransitionsExecutor(transitionsContainer, statesContainer, variableExpressionExecutor)
-#inputStimuliExecutor = InputStimuliExecutor(inputStimuliContainer, variableExpressionExecutor)
-logger = Logger(statesContainer, variablesContainer, inputsContainer)
+transitionsExecutor = TransitionsExecutor(transitionsContainer, variableExpressionExecutor, programState)
+inputStimuliExecutor = InputStimuliExecutor(inputStimuliContainer, variableExpressionExecutor)
+logger = Logger(statesContainer, variablesContainer, inputsContainer, programState)
