@@ -1,5 +1,4 @@
-from DependencyContainer import maxCycleCount, transitionsExecutor, logger, variablesContainer, \
-    inputStimuliExecutor, programState  # , inputStimuliExecutor
+from DependencyContainer import transitionsExecutor, logger, variablesContainer, programState , inputStimuliExecutor
 from model.VariablesContainer import VariablesContainer
 from services.InputStimuliExecutor import InputStimuliExecutor
 from services.Logger import Logger
