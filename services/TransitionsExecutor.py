@@ -14,7 +14,6 @@ class TransitionsExecutor:
         for transition in self.transitionsContainer.Transitions[self.statesContainer.currentState]:
             if self.variableExpressionExecutor.executeDynamicExpression(transition.condition.dynamicExpression, True):
                 for instruction in transition.instructions:
-                    print(instruction.instruction)
                     self.variableExpressionExecutor.executeDynamicExpression(instruction.instruction, False)
                 self.updateState(transition.nextState)
                 return transition

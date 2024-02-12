@@ -1,6 +1,7 @@
 class DynamicExpressionExecutor:
-    def __init__(self, dynamicExpressionsContainer):
-        self.dynamicExpressionsContainer = dynamicExpressionsContainer
+    def __init__(self, variablesContainer, inputsContainer):
+        self.variablesContainer = variablesContainer
+        self.inputsContainer = inputsContainer
 
     def executeDynamicExpression(self, dynamicExpression: str, shouldReturn: bool):
         adjustedDynamicExpression = self._replaceAllRawVariableOccurrences(dynamicExpression)
@@ -13,11 +14,21 @@ class DynamicExpressionExecutor:
     def _replaceAllRawVariableOccurrences(self, dynamicExpression):
         expressionWords = dynamicExpression.split(' ')
         for i in range(0, len(expressionWords)):
-            if expressionWords[i] in self.dynamicExpressionsContainer.objects:
-                expressionWords[i] = self._getAdjustedVariableName(expressionWords[i])
+            match expressionWords[i].split('_')[0].lower():
+                case 'var':
+                    if expressionWords[i] in self.variablesContainer.objects:
+                        expressionWords[i] = self._getAdjustedVariableName(expressionWords[i])
+                    else:
+                        raise Exception(F"Variable '{expressionWords[i]}' was not defined in Variables.")
+                case 'in':
+                    if expressionWords[i] in self.inputsContainer.objects:
+                        expressionWords[i] = self._getAdjustedInputName(expressionWords[i])
         adjustedCondition = ' '.join(expressionWords)
 
         return adjustedCondition
 
     def _getAdjustedVariableName(self, rawName):
-        return f"self.dynamicExpressionsContainer.objects['{rawName}'].dynamicExpression"
+        return f"self.variablesContainer.objects['{rawName}'].value"
+
+    def _getAdjustedInputName(self, rawName):
+        return f"self.inputsContainer.objects['{rawName}'].value"

@@ -35,7 +35,7 @@ def CreateDTOObjects():
 
     inputsContainer = InputsContainer()
     for (name, value) in inputs.items():
-        inputsContainer.Inputs[name] = Input(name, value)
+        inputsContainer.objects[name] = Input(name, value)
 
     instructionsContainer = InstructionsContainer()
     for (name, value) in operations.items():
@@ -69,8 +69,8 @@ def CreateDTOObjects():
 Instances which are injected into constructors - dependency inversion by injection 
 '''
 maxCycleCount, statesContainer, variablesContainer, inputsContainer, instructionsContainer, conditionsContainer, transitionsContainer, inputStimuliContainer = CreateDTOObjects()
-variableExpressionExecutor = DynamicExpressionExecutor(variablesContainer)
+variableExpressionExecutor = DynamicExpressionExecutor(variablesContainer, inputsContainer)
 #inputStimuliExpressionExecutor = DynamicExpressionExecutorABC(inputStimuliContainer)
 transitionsExecutor = TransitionsExecutor(transitionsContainer, statesContainer, variableExpressionExecutor)
 #inputStimuliExecutor = InputStimuliExecutor(inputStimuliContainer, variableExpressionExecutor)
-logger = Logger(statesContainer, variablesContainer)
+logger = Logger(statesContainer, variablesContainer, inputsContainer)

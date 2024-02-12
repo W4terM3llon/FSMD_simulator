@@ -4,7 +4,8 @@ from model.VariablesContainer import VariablesContainer
 
 
 class Logger():
-    def __init__(self, statesContainer, variablesContainer):
+    def __init__(self, statesContainer, variablesContainer, inputsContainer):
+        self.inputsContainer = inputsContainer
         self.statesContainer: StatesContainer = statesContainer
         self.variablesContainer: VariablesContainer = variablesContainer
 
@@ -24,9 +25,8 @@ Initial state: {self.statesContainer.currentState.name}""")
 --------------------------------------------------
 Cycle: {cycle}
 Current state: {transition.state.name}
-Inputs:
-  in_A = 100
-  in_B = 12
+Inputs: 
+{self.inputsContainer}
 The condition ({transition.condition.name}) is true.
 Executing instruction(s): 
 {str(chr(10)).join([f'{chr(9)}{instruction.name}' for instruction in transition.instructions])}

@@ -1,7 +1,4 @@
-from model.DynamicExpressionABC import DynamicExpression
-
-
-class Variable(DynamicExpression):
-    def __init__(self, name: str, dynamicExpression: str):
-        super().__init__(dynamicExpression)
+class Variable:
+    def __init__(self, name: str, value: str):
         self.name: str = name
+        self.value: str = value

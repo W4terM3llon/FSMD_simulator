@@ -6,4 +6,4 @@ class VariablesContainer:
         self.objects: dict[str, Variable] = {}
 
     def __str__(self):
-        return '\n'.join([f"\t{variable.name} = {variable.dynamicExpression}" for variable in self.objects.values()])
+        return '\n'.join([f"\t{variable.name} = {variable.value}" for variable in self.objects.values()])
