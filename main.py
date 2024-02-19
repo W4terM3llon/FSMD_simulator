@@ -22,9 +22,9 @@ class Program:
             self.logger.logCycle(cycleCounter, transition)
             cycleCounter += 1
 
-        # Print last state
-        transition = self.transitionsExecutor.executeTransitions()
-        self.logger.logCycle(cycleCounter, transition)
+        if self.programState.finishState == self.programState.currentState:  # Print last state
+            transition = self.transitionsExecutor.executeTransitions()
+            self.logger.logCycle(cycleCounter, transition)
 
         self.logger.logEnd()
 
