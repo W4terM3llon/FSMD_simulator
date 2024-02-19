@@ -4,7 +4,6 @@
     <state>INITIALIZE</state>
     <state>TEST</state>
     <state>LOOP</state>
-    <state>DUMMYTEST</state>
     <state>FINISH</state>
   </statelist>
 
@@ -104,17 +103,9 @@
       <transition>
         <condition>max_step_greater_than_2</condition>
         <instruction>NOP</instruction>
-        <nextstate>DUMMYTEST</nextstate>
-      </transition>
-    </TEST>
-
-    <DUMMYTEST>
-      <transition>
-        <condition>True</condition>
-        <instruction>NOP</instruction>
         <nextstate>LOOP</nextstate>
       </transition>
-    </DUMMYTEST>
+    </TEST>
 
     <LOOP>
       <transition>
