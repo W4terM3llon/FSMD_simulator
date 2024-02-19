@@ -9,7 +9,6 @@ class DynamicExpressionExecutor:
         if shouldReturn:
             return eval(adjustedDynamicExpression)  # super unsafe but simple af
         else:
-            print(adjustedDynamicExpression)
             exec(adjustedDynamicExpression)  # super unsafe but simple af
 
     def _replaceAllRawVariableOccurrences(self, dynamicExpression):
