@@ -41,8 +41,6 @@ class DataReader:
             fsmd_des = xmltodict.parse(fd.read())
 
         print("\n--FSMD description--")
-
-        inputStimuliContainer, endStateName = DataReader().readStimuliData()
         
         states = self.__ReadStates(fsmd_des)
         initialState = self.__ReadInitialState(fsmd_des)
@@ -92,15 +90,16 @@ class DataReader:
                         [instructionsContainer.Instructions[instructionName] for instructionName in instructionsNames]))
             transitionsContainer.Transitions[state] = transitions
 
-        programState = ProgramState(statesContainer.states[initialState], iterations, statesContainer.states[endStateName])
+        inputStimuliContainer, endState = DataReader().readStimuliData(statesContainer)
+
+        programState = ProgramState(statesContainer.states[initialState], iterations, endState)
     
         return statesContainer, variablesContainer, inputsContainer, instructionsContainer, conditionsContainer, transitionsContainer, inputStimuliContainer, programState
 
 
-    def readStimuliData(self) -> tuple[InputStimuliContainer, str]:
-        if len(sys.argv) < 3:
-            print('Too few arguments.')
-            sys.exit(-1)
+    def readStimuliData(self, statesContainer) -> tuple[InputStimuliContainer, State]:
+        if len(sys.argv) < 4:
+            return InputStimuliContainer(), State('NeverGonnaHappen')  # return fake container and EndState
         elif (len(sys.argv) > 4):
             print('Too many arguments.')
             sys.exit(-1)
@@ -125,7 +124,7 @@ class DataReader:
         for (cycle, expressions) in dynamicExpressionByCycle.items():
             inputStimuliContainer.objects[cycle] = InputStimulus(cycle, '\n'.join(expressions))
 
-        return inputStimuliContainer, fsmd_stim['fsmdstimulus']['endstate']
+        return inputStimuliContainer, statesContainer.states[fsmd_stim['fsmdstimulus']['endstate']]
 
     def __ReadStates(self, fsmd_des):
         #
