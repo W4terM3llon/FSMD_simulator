@@ -22,7 +22,7 @@ class Program:
             self.logger.logCycle(cycleCounter, transition)
             cycleCounter += 1
 
-        if self.programState.finishState == self.programState.currentState:  # Print last state
+        if cycleCounter <= self.programState.maxCycleCount and self.programState.finishState == self.programState.currentState:  # Print last state
             transition = self.transitionsExecutor.executeTransitions()
             self.logger.logCycle(cycleCounter, transition)
 

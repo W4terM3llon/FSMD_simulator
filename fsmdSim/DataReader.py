@@ -113,6 +113,7 @@ class DataReader:
         dynamicExpressionByCycle = {}
         if (not(fsmd_stim['fsmdstimulus']['setinput'] is None)):
             for setinput in fsmd_stim['fsmdstimulus']['setinput']:
+                print(setinput)
                 cycle = int(setinput['cycle'])
                 expression = setinput['expression']
                 if cycle in dynamicExpressionByCycle:
