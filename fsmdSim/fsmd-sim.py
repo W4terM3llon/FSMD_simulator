@@ -231,6 +231,10 @@ def merge_dicts(*dict_args):
     return result
 
 
+
+################## OUR CODE FROM HERE ON OUT ###############
+
+
 #
 # Description:
 # Support function to print cycle output
@@ -255,11 +259,12 @@ def printCycle(cycle: int, state, transition):
     print('--------------------------------------------------')
 
 
+
+
 #######################################
 # Start to simulate
 cycle = 0
 state = initial_state
-
 
 
 
@@ -272,11 +277,11 @@ print('Initial state: ' + initial_state)
 print('--------------------------------------------------')
 
 
+
 repeat = True
-
-
 while True:
 
+    #Given code bit for stimuli input
     try:
         if (not(fsmd_stim['fsmdstimulus']['setinput'] is None)):
             for setinput in fsmd_stim['fsmdstimulus']['setinput']:
@@ -290,8 +295,10 @@ while True:
                     if int(setinput['cycle']) == cycle:
                         execute_setinput(setinput['expression'])
     except:
-        pass    
+        pass  
 
+    
+    # Given code bit for ending based on stimuli
     try:
         if (not(fsmd_stim['fsmdstimulus']['endstate'] is None)):
             if state == fsmd_stim['fsmdstimulus']['endstate']:
@@ -300,6 +307,7 @@ while True:
         pass
 
     
+    # Transition handling
     thisTransition = fsmd_des['fsmddescription']['fsmd'][state]['transition']
     if type(thisTransition) == list:
         for trans in thisTransition:
@@ -314,10 +322,9 @@ while True:
                 state = thisTransition['nextstate']
     
 
-
+    #End state check and cycle update
     if repeat == False or cycle == iterations:
         break
-
     cycle = cycle + 1
 
 
