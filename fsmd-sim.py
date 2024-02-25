@@ -304,7 +304,7 @@ def executeTransition(fsmd_des, state):
             execute_instruction(instruction)
             newState = currentStateTransition['nextstate']
             transition = currentStateTransition
-        print(currentStateTransition)
+            break # changing state may result in a next condition being true, thus break
     return newState, instruction, transition # there is always one condition which is true, so it is fine
 
 
