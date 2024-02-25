@@ -293,7 +293,7 @@ def isInfiniteLoop(currentState, previousState, currentInstruction, previousInst
     return currentState == previousState and currentInstruction == previousInstruction and previousInstruction.lower() == 'nop'
 
 # Transition handling
-def calculateAndExecuteTransition(fsmd_des, state):
+def executeTransition(fsmd_des, state):
     currentStateTransitions = fsmd_des['fsmddescription']['fsmd'][state]['transition']
     if type(currentStateTransitions) != list:  # make sure, transitions is a list
         currentStateTransitions = [currentStateTransitions]
@@ -304,7 +304,7 @@ def calculateAndExecuteTransition(fsmd_des, state):
             execute_instruction(instruction)
             newState = currentStateTransition['nextstate']
             transition = currentStateTransition
-        #print(currentStateTransition)
+            break # changing state may result in a next condition being true, thus break
     return newState, instruction, transition # there is always one condition which is true, so it is fine
 
 
@@ -346,7 +346,7 @@ while (cycle <= iterations
     previousInstruction = currentInstruction
 
     executeInput(fsmd_stim, cycle)
-    currentState, currentInstruction, transition = calculateAndExecuteTransition(fsmd_des, currentState)
+    currentState, currentInstruction, transition = executeTransition(fsmd_des, currentState)
     printCycle(cycle, previousState, transition, inputs, fsmd_des, variables)
     cycle = cycle + 1
 
@@ -355,7 +355,7 @@ if cycle <= iterations and isEndState(fsmd_stim, currentState):  # Print last it
     previousInstruction = currentInstruction
 
     executeInput(fsmd_stim, cycle)
-    currentState, currentInstruction, transition = calculateAndExecuteTransition(fsmd_des, currentState)
+    currentState, currentInstruction, transition = executeTransition(fsmd_des, currentState)
     printCycle(cycle, previousState, transition, inputs, fsmd_des, variables)
     cycle = cycle + 1
 

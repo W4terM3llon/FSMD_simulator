@@ -6,8 +6,12 @@
   </setinput>
 
   <setinput>
-    <cycle>0</cycle>
-    <expression>pass</expression>
+    <cycle>3</cycle>
+    <expression>in_extra_combinations = 11</expression>
+  </setinput>
+  <setinput>
+    <cycle>4</cycle>
+    <expression>in_extra_combinations = 0</expression>
   </setinput>
 
 

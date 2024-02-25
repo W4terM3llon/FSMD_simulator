@@ -11,13 +11,13 @@
 
   <inputlist>
     <input>in_max_step</input>
+    <input>in_extra_combinations</input>
   </inputlist>
 
   <variablelist>
     <variable>var_current_step</variable>
     <variable>var_max_step</variable>
-    <variable>var_previous_combinations_1</variable>
-    <variable>var_previous_combinations_2</variable>
+    <variable>var_previous_combinations</variable>
     <variable>var_final_combinations</variable>
     <variable>var_temp</variable>
   </variablelist>
@@ -28,20 +28,16 @@
       <expression>var_max_step = in_max_step</expression>
     </operation>
     <operation>
+      <name>add_extra_combinations</name>
+      <expression>var_final_combinations = var_final_combinations + in_extra_combinations</expression>
+    </operation>
+    <operation>
       <name>init_cur_step</name>
       <expression>var_current_step = 0</expression>
     </operation>
     <operation>
-      <name>init_prev1</name>
-      <expression>var_previous_combinations_1 = 1</expression>
-    </operation>
-    <operation>
-      <name>init_prev2</name>
-      <expression>var_previous_combinations_2 = 1</expression>
-    </operation>
-    <operation>
-      <name>set_prev1_to_2</name>
-      <expression>var_previous_combinations_1 = 2</expression>
+      <name>init_prev</name>
+      <expression>var_previous_combinations = 1</expression>
     </operation>
     <operation>
       <name>init_final</name>
@@ -61,18 +57,14 @@
     </operation>
     <operation>
       <name>calculate_set_previous_step_values_step_1</name>
-      <expression>var_temp = var_previous_combinations_1 + var_previous_combinations_2</expression>
+      <expression>var_temp = var_previous_combinations + var_final_combinations</expression>
     </operation>
     <operation>
       <name>calculate_set_previous_step_values_step_2</name>
-      <expression>var_previous_combinations_2 = var_previous_combinations_1</expression>
+      <expression>var_previous_combinations = var_final_combinations</expression>
     </operation>
     <operation>
       <name>calculate_set_previous_step_values_step_3</name>
-      <expression> var_previous_combinations_1 = var_temp</expression>
-    </operation>
-        <operation>
-      <name>calculate_set_previous_step_values_step_4</name>
       <expression> var_final_combinations = var_temp</expression>
     </operation>
     </operationlist>
@@ -109,7 +101,7 @@
     <INITIALIZE>
       <transition>
         <condition>True</condition>
-        <instruction>init_cur_step init_max_steps init_final</instruction>
+        <instruction>init_cur_step init_max_steps init_final add_extra_combinations</instruction>
         <nextstate>TEST_INITIAL</nextstate>
       </transition>
     </INITIALIZE>
@@ -117,22 +109,22 @@
     <TEST_INITIAL>
       <transition>
         <condition>var_max_step_less_than_or_equal_0</condition>
-        <instruction>NOP</instruction>
+        <instruction>add_extra_combinations</instruction>
         <nextstate>FINISH</nextstate>
       </transition>
       <transition>
         <condition>var_current_step_equals_0_and_max_at_least_1</condition>
-        <instruction>set_var_final_step_to_1 incr_current_step init_prev1</instruction>
+        <instruction>set_var_final_step_to_1 add_extra_combinations incr_current_step init_prev</instruction>
         <nextstate>TEST_INITIAL</nextstate>
       </transition>
       <transition>
         <condition>var_current_step_equals_1_and_max_at_least_2</condition>
-        <instruction>set_var_final_step_to_2 incr_current_step init_prev2 set_prev1_to_2</instruction>
+        <instruction>add_extra_combinations incr_current_step calculate_set_previous_step_values_step_1 calculate_set_previous_step_values_step_2 calculate_set_previous_step_values_step_3</instruction>
         <nextstate>TEST_INITIAL</nextstate>
       </transition>
       <transition>
         <condition>var_current_step_more_than_1_and_var_max_step_greater_than_2</condition>
-        <instruction>NOP</instruction>
+        <instruction>add_extra_combinations</instruction>
         <nextstate>LOOP</nextstate>
       </transition>
     </TEST_INITIAL>
@@ -140,12 +132,12 @@
     <LOOP>
       <transition>
         <condition>current_step_equals_max_step</condition>
-        <instruction>NOP</instruction>
+        <instruction>add_extra_combinations</instruction>
         <nextstate>FINISH</nextstate>
       </transition>
       <transition>
         <condition>current_step_smaller_than_max_step</condition>
-        <instruction>calculate_set_previous_step_values_step_1 calculate_set_previous_step_values_step_2 calculate_set_previous_step_values_step_3 calculate_set_previous_step_values_step_4 incr_current_step</instruction>
+        <instruction>add_extra_combinations calculate_set_previous_step_values_step_1 calculate_set_previous_step_values_step_2 calculate_set_previous_step_values_step_3 incr_current_step</instruction>
         <nextstate>LOOP</nextstate>
       </transition>
     </LOOP>
