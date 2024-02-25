@@ -5,7 +5,7 @@ It includes 3 test cases, the third one was created by us. Run ```.\fsmd-sim.py`
 
 In order to see ```in_extra_combinations``` from the stimuli file in action, remember to go to ```.\fsmdSim\test_3\stair_stim.xml``` and uncomment part of the code responsible for it.
 
-You can use ```.\fsmdSim\test_3\ClimbingStairs.py``` to compare the result from FSMD.
+You can use ```.\testCases\test_3\ClimbingStairs.py``` to compare the result from FSMD.
 
 ## Authors (Group 25)
 
@@ -19,7 +19,7 @@ You can use ```.\fsmdSim\test_3\ClimbingStairs.py``` to compare the result from 
 To run the 1st test case run the following from the root of the project:
 
 ```bash
-  python .\fsmd-sim.py 100 .\fsmdSim\test_1\test_desc.xml
+  python .\fsmd-sim.py 100 .\testCases\test_1\test_desc.xml
 
 ```
 The output should be:
@@ -214,7 +214,7 @@ End of simulation. Goodbye!
 To run the 2nd test case run the following from the root of the project:
 
 ```bash
-  python .\fsmd-sim.py 100 .\fsmdSim\test_2\gcd_desc.xml  .\fsmdSim\test_2\gcd_stim.xml
+  python .\fsmd-sim.py 100 .\testCases\test_2\gcd_desc.xml  .\testCases\test_2\gcd_stim.xml
 
 ```
 The output should be:
@@ -573,7 +573,7 @@ End of simulation. Goodbye!
 To run the 3rd test case run the following from the root of the project:
 
 ```bash
-  python .\fsmd-sim.py 100 .\fsmdSim\test_3\stair_desc.xml .\fsmdSim\test_3\stair_stim.xml
+  python .\fsmd-sim.py 100 .\testCases\test_3\stair_desc.xml .\testCases\test_3\stair_stim.xml
 ```
 The output should be:
 ```
