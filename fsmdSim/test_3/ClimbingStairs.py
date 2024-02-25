@@ -27,4 +27,4 @@ def loopCountStairs(n):
 if __name__ == '__main__':
     if len(sys.argv[0]) < 1:
         raise Exception('Stairs number must be given as a parameter.')
-    print(loopCountStairs(2))
+    print(loopCountStairs(9))
