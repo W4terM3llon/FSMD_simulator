@@ -153,7 +153,7 @@
 
     <FINISH>
       <transition>
-        <condition>current_step_equals_max_step</condition>
+        <condition>True</condition>
         <instruction>NOP</instruction>
         <nextstate>FINISH</nextstate>
       </transition>
