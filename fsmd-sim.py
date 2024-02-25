@@ -32,8 +32,8 @@ print("\n--FSMD description--")
 #
 states = fsmd_des['fsmddescription']['statelist']['state']
 print("States:")
-for state in states:
-    print('  ' + state)
+for currentState in states:
+    print('  ' + currentState)
 #
 # Description:
 # The 'initial_state' variable of type 'string' contains the initial_state name.
@@ -136,24 +136,24 @@ for condition in conditions:
 # describing the FSMD transition table.
 #
 fsmd = {}
-for state in states:
-    fsmd[state] = []
-    for transition in fsmd_des['fsmddescription']['fsmd'][state]['transition']:
+for currentState in states:
+    fsmd[currentState] = []
+    for transition in fsmd_des['fsmddescription']['fsmd'][currentState]['transition']:
         if type(transition) is str:
             #Only one element
-            fsmd[state].append({'condition': fsmd_des['fsmddescription']['fsmd'][state]['transition']['condition'],
-                                'instruction': fsmd_des['fsmddescription']['fsmd'][state]['transition']['instruction'],
-                                'nextstate': fsmd_des['fsmddescription']['fsmd'][state]['transition']['nextstate']})
+            fsmd[currentState].append({'condition': fsmd_des['fsmddescription']['fsmd'][currentState]['transition']['condition'],
+                                'instruction': fsmd_des['fsmddescription']['fsmd'][currentState]['transition']['instruction'],
+                                'nextstate': fsmd_des['fsmddescription']['fsmd'][currentState]['transition']['nextstate']})
             break
         else:
             #More than 1 element
-            fsmd[state].append({'condition' : transition['condition'],
+            fsmd[currentState].append({'condition' : transition['condition'],
                                 'instruction' : transition['instruction'],
                                 'nextstate' : transition['nextstate']})
 print("FSMD transitions table:")
-for state in fsmd:
-    print('  ' + state)
-    for transition in fsmd[state]:
+for currentState in fsmd:
+    print('  ' + currentState)
+    for transition in fsmd[currentState]:
         print('    ' + 'nextstate: ' + transition['nextstate'] + ', condition: ' + transition['condition'] + ', instruction: ' + transition['instruction'])
 
 
@@ -239,7 +239,7 @@ def merge_dicts(*dict_args):
 # Description:
 # Support function to print cycle output
 #
-def printCycle(cycle: int, state, transition):
+def printCycle(cycle, state, transition, inputs, fsmd_des, variables):
     print('Cycle: ' + str(cycle) + ' ')
     print('Current state: ' + state)
 
@@ -258,93 +258,105 @@ def printCycle(cycle: int, state, transition):
 
     print('--------------------------------------------------')
 
-
-
-
-#######################################
-# Start to simulate
-cycle = 0
-state = initial_state
-
-
-
-print('\n---Start simulation---')
-print('At the beginning of the simulation the status is:')
-print('Variables:')
-for variable in fsmd_des['fsmddescription']['variablelist']['variable']:
+def printStart(fsmd_des, initial_state):
+    print('\n---Start simulation---')
+    print('At the beginning of the simulation the status is:')
+    print('Variables:')
+    for variable in fsmd_des['fsmddescription']['variablelist']['variable']:
         print('  ' + variable + ' = ' + str(variables[variable]))
-print('Initial state: ' + initial_state)
-print('--------------------------------------------------')
+    print('Initial state: ' + initial_state)
+    print('--------------------------------------------------')
 
+def printEnd():
+    # Exit message:
+    print('End-state reached.')
+    print('End of simulation. Goodbye!')
 
-instruction = ''
-lastInstruct = ''
-
-
-repeat = True
-while True:
-
-    #Given code bit for stimuli input
+# Determines if endState is reached
+def isEndState(fsmd_stim, currentState):
+    #
+    # Description:
+    # This is a code snipppet used to check the endstate value according to the
+    # stimuli file content. You can see here how the 'fsmd_stim' variable is used.
+    #
     try:
-        if (not(fsmd_stim['fsmdstimulus']['setinput'] is None)):
+        if (not(fsmd_stim['fsmdstimulus']['endstate'] is None)):
+            if currentState == fsmd_stim['fsmdstimulus']['endstate']:
+                return True
+    except:
+        pass
+
+    return False
+
+# Determines if fsmd fell into an infinite loop
+def isInfiniteLoop(currentState, previousState, currentInstruction, previousInstruction):
+    return currentState == previousState and currentInstruction == previousInstruction and previousInstruction.lower() == 'nop'
+
+# Transition handling
+def executeTransition(fsmd_des, state):
+    currentStateTransitions = fsmd_des['fsmddescription']['fsmd'][state]['transition']
+    if type(currentStateTransitions) != list:  # make sure, transitions is a list
+        currentStateTransitions = [currentStateTransitions]
+
+    for currentStateTransition in currentStateTransitions:
+        if evaluate_condition(currentStateTransition['condition']):
+            instruction = currentStateTransition['instruction']
+            execute_instruction(instruction)
+            newState = currentStateTransition['nextstate']
+            transition = currentStateTransition
+        print(currentStateTransition)
+    return newState, instruction, transition # there is always one condition which is true, so it is fine
+
+
+def executeInput(fsmd_stim, cycle):
+    #
+    # Description:
+    # This is a code snippet used to update the inputs values according to the
+    # stimuli file content. You can see here how the 'fsmd_stim' variable is used.
+    #
+    try:
+        if (not (fsmd_stim['fsmdstimulus']['setinput'] is None)):
             for setinput in fsmd_stim['fsmdstimulus']['setinput']:
                 if type(setinput) is str:
-                    #Only one element
+                    # Only one element
                     if int(fsmd_stim['fsmdstimulus']['setinput']['cycle']) == cycle:
                         execute_setinput(fsmd_stim['fsmdstimulus']['setinput']['expression'])
                     break
                 else:
-                    #More than 1 element
+                    # More than 1 element
                     if int(setinput['cycle']) == cycle:
                         execute_setinput(setinput['expression'])
     except:
-        pass  
-
-    
-    # Given code bit for ending based on stimuli
-    try:
-        if (not(fsmd_stim['fsmdstimulus']['endstate'] is None)):
-            if state == fsmd_stim['fsmdstimulus']['endstate']:
-                repeat = False
-    except:
         pass
 
-    
-    
+#######################################
+# Start to simulate
+printStart(fsmd_des, initial_state)
 
-    # Transition handling
-    thisTransition = fsmd_des['fsmddescription']['fsmd'][state]['transition']
-    if type(thisTransition) == list: #For lists of possible transitions
-        for trans in thisTransition:
-            if evaluate_condition(trans['condition']):
-                lastInstruct = instruction
-                instruction = trans['instruction']
-                execute_instruction(instruction)
-                printCycle(cycle, state, trans)
-                lastState = state
-                state = trans['nextstate']
-    else: # If there is only one possible transition
-        if evaluate_condition(thisTransition['condition']):
-                lastInstruct = instruction
-                instruction = thisTransition['instruction']
-                execute_instruction(instruction)
-                printCycle(cycle, state, thisTransition)
-                lastState = state
-                state = thisTransition['nextstate']
+currentState = initial_state
+previousState = currentState
+currentInstruction = ''
+previousInstruction = currentInstruction
 
+cycle = 0
+while (cycle <= iterations
+       and not isEndState(fsmd_stim, currentState)
+       and not isInfiniteLoop(currentState, previousState, currentInstruction, previousInstruction)):
+    previousState = currentState
+    previousInstruction = currentInstruction
 
-    if state == lastState and instruction == lastInstruct and lastInstruct == 'NOP' or lastInstruct == 'nop':
-        repeat = False
-    
-
-    #End state check and cycle update
-    if repeat == False or cycle == iterations:
-        break
+    executeInput(fsmd_stim, cycle)
+    currentState, currentInstruction, transition = executeTransition(fsmd_des, currentState)
+    printCycle(cycle, previousState, transition, inputs, fsmd_des, variables)
     cycle = cycle + 1
 
+if cycle <= iterations and isEndState(fsmd_stim, currentState):  # Print last iteration
+    previousState = currentState
+    previousInstruction = currentInstruction
 
+    executeInput(fsmd_stim, cycle)
+    currentState, currentInstruction, transition = executeTransition(fsmd_des, currentState)
+    printCycle(cycle, previousState, transition, inputs, fsmd_des, variables)
+    cycle = cycle + 1
 
-
-#Exit message:
-print('End-state reached.')
-print('End of simulation. Goodbye!')
+printEnd()
