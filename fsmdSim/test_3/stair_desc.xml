@@ -2,7 +2,7 @@
 
   <statelist>
     <state>INITIALIZE</state>
-    <state>TEST</state>
+    <state>TEST_INITIAL</state>
     <state>LOOP</state>
     <state>FINISH</state>
   </statelist>
@@ -16,10 +16,10 @@
   <variablelist>
     <variable>var_current_step</variable>
     <variable>var_max_step</variable>
-    <variable>var_prev_1</variable>
-    <variable>var_prev_2</variable>
-    <variable>var_final_step</variable>
-    <variable>var_next</variable>
+    <variable>var_previous_combinations_1</variable>
+    <variable>var_previous_combinations_2</variable>
+    <variable>var_final_combinations</variable>
+    <variable>var_temp</variable>
   </variablelist>
 
   <operationlist>
@@ -29,50 +29,70 @@
     </operation>
     <operation>
       <name>init_cur_step</name>
-      <expression>var_current_step = 2</expression>
+      <expression>var_current_step = 0</expression>
     </operation>
     <operation>
       <name>init_prev1</name>
-      <expression>var_prev_1 = 2</expression>
+      <expression>var_previous_combinations_1 = 1</expression>
     </operation>
     <operation>
       <name>init_prev2</name>
-      <expression>var_prev_2 = 1</expression>
+      <expression>var_previous_combinations_2 = 1</expression>
+    </operation>
+    <operation>
+      <name>set_prev1_to_2</name>
+      <expression>var_previous_combinations_1 = 2</expression>
     </operation>
     <operation>
       <name>init_final</name>
-      <expression>var_final_step = 0</expression>
+      <expression>var_final_combinations = 0</expression>
+    </operation>
+    <operation>
+      <name>set_var_final_step_to_1</name>
+      <expression>var_final_combinations = 1</expression>
+    </operation>
+    <operation>
+      <name>set_var_final_step_to_2</name>
+      <expression>var_final_combinations = 2</expression>
     </operation>
     <operation>
       <name>incr_current_step</name>
       <expression>var_current_step = var_current_step + 1</expression>
     </operation>
     <operation>
-      <name>calculate_next_step_1</name>
-      <expression>var_next = var_prev_1 + var_prev_2</expression>
+      <name>calculate_set_previous_step_values_step_1</name>
+      <expression>var_temp = var_previous_combinations_1 + var_previous_combinations_2</expression>
     </operation>
     <operation>
-      <name>calculate_next_step_2</name>
-      <expression>var_prev_2 = var_prev_1</expression>
+      <name>calculate_set_previous_step_values_step_2</name>
+      <expression>var_previous_combinations_2 = var_previous_combinations_1</expression>
     </operation>
     <operation>
-      <name>calculate_next_step_3</name>
-      <expression> var_prev_1 = var_next</expression>
+      <name>calculate_set_previous_step_values_step_3</name>
+      <expression> var_previous_combinations_1 = var_temp</expression>
     </operation>
         <operation>
-      <name>calculate_next_step_4</name>
-      <expression> var_final_step = var_next</expression>
+      <name>calculate_set_previous_step_values_step_4</name>
+      <expression> var_final_combinations = var_temp</expression>
     </operation>
     </operationlist>
 
   <conditionlist>
     <condition>
-      <name>max_step_equal_1_or_2</name>
-      <expression>var_max_step == 1 or var_max_step == 2</expression>
+      <name>var_max_step_less_than_or_equal_0</name>
+      <expression>var_max_step &lt;= 0</expression>
     </condition>
     <condition>
-      <name>max_step_greater_than_2</name>
-      <expression>var_max_step &gt; 2 </expression>
+      <name>var_current_step_equals_0_and_max_at_least_1</name>
+      <expression>var_current_step == 0 and var_max_step >= 1</expression>
+    </condition>
+    <condition>
+      <name>var_current_step_equals_1_and_max_at_least_2</name>
+      <expression>var_current_step == 1 and var_max_step >= 2</expression>
+    </condition>
+    <condition>
+      <name>var_current_step_more_than_1_and_var_max_step_greater_than_2</name>
+      <expression>var_current_step > 1 and var_max_step &gt; 2 </expression>
     </condition>
     <condition>
       <name>current_step_equals_max_step</name>
@@ -89,23 +109,33 @@
     <INITIALIZE>
       <transition>
         <condition>True</condition>
-        <instruction>init_cur_step init_max_steps init_final init_prev1 init_prev2</instruction>
-        <nextstate>TEST</nextstate>
+        <instruction>init_cur_step init_max_steps init_final</instruction>
+        <nextstate>TEST_INITIAL</nextstate>
       </transition>
     </INITIALIZE>
 
-    <TEST>
+    <TEST_INITIAL>
       <transition>
-        <condition>max_step_equal_1_or_2</condition>
-        <instruction>incr_current_step</instruction>
+        <condition>var_max_step_less_than_or_equal_0</condition>
+        <instruction>NOP</instruction>
         <nextstate>FINISH</nextstate>
       </transition>
       <transition>
-        <condition>max_step_greater_than_2</condition>
+        <condition>var_current_step_equals_0_and_max_at_least_1</condition>
+        <instruction>set_var_final_step_to_1 incr_current_step init_prev1</instruction>
+        <nextstate>TEST_INITIAL</nextstate>
+      </transition>
+      <transition>
+        <condition>var_current_step_equals_1_and_max_at_least_2</condition>
+        <instruction>set_var_final_step_to_2 incr_current_step init_prev2 set_prev1_to_2</instruction>
+        <nextstate>TEST_INITIAL</nextstate>
+      </transition>
+      <transition>
+        <condition>var_current_step_more_than_1_and_var_max_step_greater_than_2</condition>
         <instruction>NOP</instruction>
         <nextstate>LOOP</nextstate>
       </transition>
-    </TEST>
+    </TEST_INITIAL>
 
     <LOOP>
       <transition>
@@ -115,11 +145,10 @@
       </transition>
       <transition>
         <condition>current_step_smaller_than_max_step</condition>
-        <instruction>calculate_next_step_1 calculate_next_step_2 calculate_next_step_3 calculate_next_step_4 incr_current_step</instruction>
+        <instruction>calculate_set_previous_step_values_step_1 calculate_set_previous_step_values_step_2 calculate_set_previous_step_values_step_3 calculate_set_previous_step_values_step_4 incr_current_step</instruction>
         <nextstate>LOOP</nextstate>
       </transition>
     </LOOP>
-
 
 
     <FINISH>
