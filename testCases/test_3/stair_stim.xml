@@ -1,0 +1,25 @@
+<fsmdstimulus>
+
+  <setinput>
+    <cycle>0</cycle>
+    <expression>in_max_step = 9</expression>
+  </setinput>
+  <setinput>
+    <cycle>1</cycle>
+    <expression>in_max_step = 0</expression>
+  </setinput>
+
+  <!--Uncomment this code to see in_extra_combinations in work-->
+  <!--
+  <setinput>
+    <cycle>3</cycle>
+    <expression>in_extra_combinations = 11</expression>
+  </setinput>
+  <setinput>
+    <cycle>4</cycle>
+    <expression>in_extra_combinations = 0</expression>
+  </setinput>
+-->
+
+  <endstate>FINISH</endstate>
+</fsmdstimulus>
