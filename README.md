@@ -1,6 +1,6 @@
+# Finite State Machine with Datapath 
+This is an FSMD simulator project that was created for 'Cyber Systems' course for Bsc. in General Engineering at Technical University of Denmark.
 
-# FSMD
-This is FSMD project implemented in Python.
 It includes 3 test cases, the third one was created by us. Run ```.\fsmd-sim.py``` file to use the project. 
 
 In order to see ```in_extra_combinations``` from the stimuli file in action, remember to go to ```.\fsmdSim\test_3\stair_stim.xml``` and uncomment part of the code responsible for it.
